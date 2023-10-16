@@ -21,7 +21,8 @@ services:
   php-apache:
     container_name: php_apache
     build:
-      context: ./php
+      context: .
+      dockerfile: php/Dockerfile
     ports:
       # do some port matching
       - 80:80
@@ -32,15 +33,4 @@ services:
     depends_on:
       # define which container is needed to run first
       - database
-  npm:
-    image: node:alpine
-    container_name: npm
-    volumes:
-      - ./src:/var/www/html
-      - .env:/var/www/html/.env
-    ports:
-      - 3000:3000
-      - 3001:3001
-    working_dir: /var/www/html
-    profiles: ["npm"]
-    entrypoint: ['npm']
+  
