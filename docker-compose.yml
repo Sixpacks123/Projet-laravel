@@ -21,6 +21,8 @@ services:
     ports:
       # do some port matching: local <> docker
       - 5432:5432
+    networks:
+      - laravel_network
 
   # define the web server container
   php-apache:
@@ -38,4 +40,8 @@ services:
     depends_on:
       # define which container is needed to run first
       - database
-  
+    networks:
+      - laravel_network
+  networks:
+  laravel_network:
+    driver: bridge
