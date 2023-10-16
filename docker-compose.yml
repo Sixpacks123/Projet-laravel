@@ -6,6 +6,11 @@ services:
     image: postgres # the database engine we want to use
     container_name: database # the name of the container when listed while its running
     restart: unless-stopped # restart strategy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       # we do not specify a username, so it will be `posgres`
       POSTGRES_PASSWORD: stephane # a password you should change, also check the `.env` file in the `src` directory
