@@ -1,4 +1,4 @@
-name: Build Docker Compose
+name: Build and Run Docker Compose
 
 on:
   push:
@@ -16,14 +16,24 @@ jobs:
     - name: Build docker-compose
       run: docker-compose build
 
-    # Lancer les conteneurs avec docker-compose
-    - name: Start containers
+  start:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Start docker-compose
       run: docker-compose up -d
 
-    # Exécuter la migration Laravel à l'intérieur du conteneur
-    - name: Laravel migration
-      run: docker-compose exec -it php-apache php artisan migrate
+  migrate:
+    needs: start
+    runs-on: ubuntu-latest
 
-    # (Optionnel) Arrêter les conteneurs si nécessaire
-    - name: Stop containers
-      run: docker-compose down
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Run Artisan Migrate
+      run: docker-compose exec -T php-apache php artisan migrate
