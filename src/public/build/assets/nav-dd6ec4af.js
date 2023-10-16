@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",()=>{const e=document.getElementById("burger-menu"),t=document.getElementById("menu");e&&t&&e.addEventListener("click",function(){e.classList.toggle("close"),t.classList.toggle("overlay")})});

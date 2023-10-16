@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # define the database container
+  database:
+    image: postgres # the database engine we want to use
+    container_name: database # the name of the container when listed while its running
+    restart: unless-stopped # restart strategy
+    environment:
+      # we do not specify a username, so it will be `posgres`
+      POSTGRES_PASSWORD: stephane # a password you should change, also check the `.env` file in the `src` directory
+      POSTGRES_DB: prevention # name the database
+    volumes:
+      # define where store data, so it will not be lost when the container restarts
+      - ./src/volumes/postgres-data:/var/lib/postgresql/data
+    ports:
+      # do some port matching: local <> docker
+      - 5432:5432
+
+  # define the web server container
+  php-apache:
+    container_name: php_apache
+    build:
+      context: ./php
+    ports:
+      # do some port matching
+      - 80:80
+      - 5173:5173  # vite development server
+    volumes:
+      - ./src:/var/www/laravel_docker # link the project source files to the working directory defined in `/php/Dockerfile`
+      - ./apache/default.conf:/etc/apache2/sites-enabled/000-default.conf # link the apache configuration for the virtual host
+    depends_on:
+      # define which container is needed to run first
+      - database
+  npm:
+    image: node:alpine
+    container_name: npm
+    volumes:
+      - ./src:/var/www/html
+      - .env:/var/www/html/.env
+    ports:
+      - 3000:3000
+      - 3001:3001
+    working_dir: /var/www/html
+    profiles: ["npm"]
+    entrypoint: ['npm']
