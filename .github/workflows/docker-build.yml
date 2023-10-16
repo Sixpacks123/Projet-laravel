@@ -19,7 +19,15 @@ jobs:
     # Lancer les conteneurs avec docker-compose
     - name: Start containers
       run: docker-compose up -d
+    
+    - name: Install dockerize
+      run: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+      env:
+        DOCKERIZE_VERSION: v0.6.1
 
+    - name: Wait for DB
+      run: dockerize -wait tcp://database:5432 -timeout 1m
+      
     # Exécuter la migration Laravel à l'intérieur du conteneur
     - name: Laravel migration
       run: docker-compose exec -T php-apache php artisan migrate
